@@ -13,25 +13,26 @@ Defines some event and calls that.
 
     >>> var body = $( document.body );
     >>> var func = function() { $.doctest.__test__ = "done"; };
+    >>> func = function() { window.__test__ = "done"; }; //doctest: +SKIP
     >>> var handler = function() {
     ...     return _click_( this ) && func();
     ... };
     >>> body.click( handler ); //doctest: +SKIP
     >>> body.click(); //doctest: +SKIP
 
-Then that event is pushed to holdevent.
+Then that event is holded to holdevent.
 
     >>> $.holdevent.queue.length;
     1
     >>> $.holdevent.queue[ 0 ][ 0 ] === document.body;
     true
-    >>> window.test;
+    >>> window.__test__;
     undefined
 
 And executes that.
 
     >>> $.holdevent.trigger(); //doctest: +SKIP
-    >>> $.doctest.__test__;
+    >>> window.__test__;
     done
     >>> $.holdevent.queue.length;
     0
@@ -42,12 +43,12 @@ holdevent.prototype = {
     queue: [],
     locked: false,
 
-    push: function( elem, eventType ) {
+    hold: function( elem, eventType ) {
         /** Pushes an event to the queue.
 
         It returns false if the page is not ready yet.
 
-            >>> $.holdevent.push( document.body, "scroll" );
+            >>> $.holdevent.hold( document.body, "scroll" );
             false
             >>> $.holdevent.queue.length;
             1
@@ -55,7 +56,7 @@ holdevent.prototype = {
         When page is ready it returns true.
 
             >>> $.holdevent.lock(); //doctest: +SKIP
-            >>> $.holdevent.push( document.body, "scroll" );
+            >>> $.holdevent.hold( document.body, "scroll" );
             true
             >>> $.holdevent.queue.length;
             1
@@ -112,7 +113,7 @@ holdevent.prototype = {
 var self = new holdevent();
 $.extend({ holdevent: self });
 
-/** Define functions for pushes the event. e.g: _click_, _focus_, _load_, ...
+/** Define functions for holds the event. e.g: _click_, _focus_, _load_, ...
 */
 var events = (
     "blur focus focusin focusout load resize scroll unload click dblclick " +
@@ -123,7 +124,7 @@ var events = (
 for (var i in events) {
     glob[ "_" + events[ i ] + "_" ] = eval(
         "(function( elem ) {" +
-        "return $.holdevent.push( elem, '" +
+        "return $.holdevent.hold( elem, '" +
         events[ i ] + "' ); });"
     );
 }
