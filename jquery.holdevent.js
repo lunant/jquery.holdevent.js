@@ -1,8 +1,8 @@
 /**
  * jquery.holdevent.js beta
- * http://lab.heungsub.net/jquery.holdevent.js
+ * http://lab.sublee.kr/jquery.holdevent.js
  * 
- * Copyright 2010, Heungsub Lee <heungsub+holdevent@lunant.net>
+ * Copyright 2010, Lee Heung-sub <heungsub+holdevent@lunant.net>
  * Dual licensed under the MIT or GPL Version 2 licenses.
  * See also MIT-LICENSE.txt and GPL-LICENSE.txt 
  */
@@ -115,19 +115,19 @@ $.extend({ holdevent: self });
 
 /** Define functions for holds the event. e.g: _click_, _focus_, _load_, ...
 */
-var events = (
+var eventTypes = (
     "blur focus focusin focusout load resize scroll unload click dblclick " +
-	"mousedown mouseup mousemove mouseover mouseout mouseenter mouseleave " +
-	"change select submit keydown keypress keyup error"
+    "mousedown mouseup mousemove mouseover mouseout mouseenter mouseleave " +
+    "change select submit keydown keypress keyup error"
 ).split(" ");
 
-for (var i in events) {
-    glob[ "_" + events[ i ] + "_" ] = eval(
-        "(function( elem ) {" +
-        "return $.holdevent.hold( elem, '" +
-        events[ i ] + "' ); });"
+$.each( eventTypes, function() {
+    var eventType = this;
+    glob[ "_" + eventType + "_" ] = new Function(
+        "var elem = arguments[ 0 ];" +
+        "return $.holdevent.hold( elem, '" + eventType + "' );"
     );
-}
+});
 
 $(function() {
     self.lock().trigger();
